@@ -3,16 +3,32 @@ import re
 import httpx
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import Header
+import logging 
 
 app = FastAPI()
 security = HTTPBearer()
+logging.basicConfig(level=logging.INFO)
 
 def sanitize(s):
     return re.sub(r'[^a-zA-Z0-9_]', '', s)
 
-def transform_users(json):
-    return json
+def transform_users(data):
+    """
+    Take the Synapse users JSON and return only:
+    name, displayname, last_seen_ts
+    """
+    if not isinstance(data, dict) or "users" not in data:
+        return data  # fallback if structure is unexpected
 
+    simplified = []
+    for user in data["users"]:
+        simplified.append({
+            "name": user.get("name"),
+            "displayname": user.get("displayname"),
+            "last_seen_ts": user.get("last_seen_ts")
+        })
+
+    return {"users": simplified, "total": len(simplified)}
 
 @app.get("/admin-api/")
 def read_root():
@@ -22,6 +38,7 @@ def read_root():
 @app.post("/admin-api/getUsers")
 async def get_users(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
+
     headers = {
         "Authorization": f"Bearer {sanitize(token)}"
     }
@@ -42,3 +59,4 @@ async def get_users(credentials: HTTPAuthorizationCredentials = Depends(security
     mutated = transform_users(data)
 
     return mutated
+
