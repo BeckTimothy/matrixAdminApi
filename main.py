@@ -3,7 +3,6 @@ import re
 import httpx
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import Header
-from fastapi import HTTPException
 
 app = FastAPI()
 security = HTTPBearer()
