@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 import re
 import httpx
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -20,8 +20,8 @@ def read_root():
 
 
 @app.post("/admin-api/getUsers")
-async def get_users(authorization: str = Header(...)):
-    token = authorization.split(" ")[1]
+async def get_users(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token = credentials.credentials
     headers = {
         "Authorization": f"Bearer {sanitize(token)}"
     }
