@@ -131,5 +131,28 @@ async def new_user(user: NewUser, credentials: HTTPAuthorizationCredentials = De
     return response.json()
 
 
+class User(BaseModel):
+    username: str
+
+@app.post("/admin-api/deactivate")
+async def new_user(user: User, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token = credentials.credentials
+
+    headers = {
+        "Authorization": f"Bearer {sanitize(token)}",
+        "Content-Type": "application/json"
+    }
+
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        try:
+            response = await client.get("http://localhost:8008/_synapse/admin/v1/deactivate/@{sanitize(user.username):matrix.lowtechsanonymous.com}", 
+                                        headers=headers,
+                                        json='{"erase": true}')
+        except httpx.RequestError as e:
+            raise HTTPException(status_code=502, detail=str(e))
+
+    return response.json()
+
+
 
 
