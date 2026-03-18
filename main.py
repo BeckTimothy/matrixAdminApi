@@ -135,7 +135,7 @@ class User(BaseModel):
     username: str
 
 @app.post("/admin-api/deactivate")
-async def new_user(user: User, credentials: HTTPAuthorizationCredentials = Depends(security)):
+async def delete_user(user: User, credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
 
     headers = {
