@@ -41,7 +41,7 @@ def transform_users(data):
 
 def generate_mac(nonce, user, password, admin=False, user_type=None):
     mac = hmac.new(
-      key=shared_secret,
+      key=shared_secret.encode("utf-8"),
       digestmod=hashlib.sha1,
     )
 
@@ -117,7 +117,7 @@ async def new_user(user: NewUser, credentials: HTTPAuthorizationCredentials = De
 
     data['username'] = sanitize(user.username)
     data['password'] = sanitize(user.password)
-    data['mac'] = generate_mac(data.nonce, data.username, data.password)
+    data['mac'] = generate_mac(data['nonce'], data['username'], data['password'])
 
     async with httpx.AsyncClient(timeout=10.0) as client:
         try:
