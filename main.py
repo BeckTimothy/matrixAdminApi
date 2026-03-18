@@ -145,9 +145,9 @@ async def new_user(user: User, credentials: HTTPAuthorizationCredentials = Depen
 
     async with httpx.AsyncClient(timeout=10.0) as client:
         try:
-            response = await client.get("http://localhost:8008/_synapse/admin/v1/deactivate/@{sanitize(user.username):matrix.lowtechsanonymous.com}", 
+            response = await client.get(f"http://localhost:8008/_synapse/admin/v1/deactivate/@{sanitize(user.username)}:matrix.lowtechsanonymous.com", 
                                         headers=headers,
-                                        json='{"erase": true}')
+                                        json={"erase": True})
         except httpx.RequestError as e:
             raise HTTPException(status_code=502, detail=str(e))
 
